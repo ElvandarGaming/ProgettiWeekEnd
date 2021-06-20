@@ -1,23 +1,23 @@
 package settimana1;
 
-
-import java.util.Date;
-import java.text.DateFormat;
-import java.util.Locale;
+import java.time.LocalDate;
 
 public class Student {
 	public String name;
 	public String surname;
-	public Date bornDate;
+	public LocalDate  bornDate;
 	public String fiscalCode;
 	public static final int MAX_SKILL = 10;
 	public Skill[] skillList = new Skill[MAX_SKILL];
 	public int skillCount;
+	
+	public Student() {
+	}
 
-	public Student(String name, String surname, int bornDate, String fiscalCode, Skill skill) {
+	public Student(String name, String surname, int year , int month , int day , String fiscalCode, Skill skill) {
 		this.name = name;
 		this.surname = surname;
-		this.bornDate = new Date(bornDate);
+		this.bornDate = LocalDate.of( year , month  , day );
 		this.fiscalCode = fiscalCode;
 		addSkill(skill);
 
