@@ -4,6 +4,7 @@ public class Skill {
 	public String skillType;
 	public String specialization;
 	public int skillLevel;
+	public Livello lvl;
 	public static final int MAX_SKILL_LEVEL = 10;
 	
 	public Skill() {
@@ -13,6 +14,11 @@ public class Skill {
 		this.skillType = skillType;
 		this.specialization = specialization;
 		this.skillLevel = skillLevel;
+	}
+	public Skill(String skillType, String specialization, Livello lvl) {
+		this.skillType = skillType;
+		this.specialization = specialization;
+		this.lvl = lvl;
 	}
 	
 	public void printSkill() {
