@@ -25,12 +25,12 @@ public class ListaImpiegati {
 
 	public BigDecimal maxMen() {
 		return lista.stream().filter(p -> p.getSesso().equals(Sesso.M)).map(Impiegato::getStipendio)
-				.max(BigDecimal::compareTo).get();
+				.max(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
 	}
 
 	public BigDecimal minWomen() {
 		return lista.stream().filter(p -> p.getSesso().equals(Sesso.F)).map(Impiegato::getStipendio)
-				.min(BigDecimal::compareTo).get();
+				.min(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
 	}
 
 	public BigDecimal average() {
@@ -52,30 +52,54 @@ public class ListaImpiegati {
 		}
 
 		var mode = ripetiz.entrySet().stream().max((a1, a2) -> a1.getValue() - a2.getValue()).map(a -> a.getKey())
-				.get();
+				.orElse(BigDecimal.ZERO);
 
 		return mode;
 	}
 
+	public BigDecimal modeFullStream() {
+		Map<BigDecimal, Integer> ripetiz = new HashMap<>();
+		lista.stream().map(i -> i.getStipendio()).forEach(bd -> {
+			if (ripetiz.containsKey(bd)) {
+				Integer value = ripetiz.get(bd) + 1;
+				ripetiz.put(bd, value);
+			} else {
+				ripetiz.put(bd, 1);
+			}
+		});
+
+		var mode = ripetiz.entrySet().stream().max((a1, a2) -> a1.getValue() - a2.getValue()).map(a -> a.getKey())
+				.orElse(BigDecimal.ZERO);
+
+		return mode;
+	}
+
+	public BigDecimal modeEcstasy() {
+		return lista.stream().collect(Collectors.toMap(Impiegato::getStipendio, i -> 1, (e, r) -> e + r)).entrySet()
+				.stream().max((a1, a2) -> a1.getValue() - a2.getValue()).map(a -> a.getKey()).orElse(BigDecimal.ZERO);
+	}
+
 	public String getPoveriMenName() {
 
-		String nomi = lista.stream().filter(p -> p.getSesso().equals(Sesso.M)).filter(i -> ListaImpiegati.compareBigDecimal(i.getStipendio(), BigDecimal.valueOf(2000)))
+		String nomi = lista.stream().filter(p -> p.getSesso().equals(Sesso.M))
+				.filter(i -> ListaImpiegati.compareBigDecimal(i.getStipendio(), BigDecimal.valueOf(2000)))
 				.map(i -> i.getNome()).collect(Collectors.joining("#"));
 
 		return nomi;
 	}
 
 	public BigDecimal mediana() {
-		
-		Stream<BigDecimal> ordinati = lista.stream().map(x -> x.getStipendio()).sorted((d1,d2) -> d1.compareTo(d2));
-		
-		BigDecimal mediana = lista.size()%2 == 0 ?
-				ordinati.skip(lista.size()/2-1).limit(2).reduce((s, next) -> s.add(next)).map(s -> s.divide(BigDecimal.valueOf(2), RoundingMode.HALF_EVEN)).get():
-				ordinati.skip(lista.size()/2).findFirst().get();
-				
+
+		Stream<BigDecimal> ordinati = lista.stream().map(x -> x.getStipendio()).sorted((d1, d2) -> d1.compareTo(d2));
+
+		BigDecimal mediana = lista.size() % 2 == 0
+				? ordinati.skip(lista.size() / 2 - 1).limit(2).reduce((s, next) -> s.add(next))
+						.map(s -> s.divide(BigDecimal.valueOf(2), RoundingMode.HALF_EVEN)).get()
+				: ordinati.skip(lista.size() / 2).findFirst().orElse(BigDecimal.ZERO);
+
 		return mediana;
 	}
-	
+
 	private static boolean compareBigDecimal(BigDecimal a, BigDecimal b) {
 
 		if (a.compareTo(b) == -1 || a.compareTo(b) == 0) {
